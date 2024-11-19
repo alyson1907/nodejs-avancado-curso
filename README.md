@@ -1,8 +1,12 @@
 # Restaurant Orders API
 
-Esta é uma API backend desenvolvida em **Node.js** e **TypeScript** para gerenciar pedidos de um restaurante, oferecendo uma experiência de acompanhamento de status em tempo real com **WebSockets**. Ela permite que clientes realizem pedidos e acompanhem o status da entrega, enquanto os restaurantes têm controle sobre a atualização dos status dos pedidos.
+Esta é uma API backend desenvolvida para fins educativos utilizando **Node.js** e **TypeScript**.
 
-## Table of Contents
+Seu principal objetivo é simular o gerenciamento pedidos de um restaurante, oferecendo uma experiência de acompanhamento de status em tempo real com **WebSockets**.
+
+A API permite que clientes realizem seus pedidos nos restaurantes e acompanhem o status da entrega, enquanto os restaurantes têm controle sobre a atualização dos status dos pedidos.
+
+## Sumário
 
 - [Instalação e Execução](#instalação-e-execução)
 - [Funcionalidades](#funcionalidades)
