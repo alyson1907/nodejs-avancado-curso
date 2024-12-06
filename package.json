@@ -1,0 +1,20 @@
+{
+  "name": "node_avancado",
+  "version": "1.0.0",
+  "description": "Esta é uma API backend desenvolvida para fins educativos utilizando **Node.js** e **TypeScript**.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "ts-node-dev src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "typescript": "^5.7.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "ts-node-dev": "^2.0.0"
+  }
+}
