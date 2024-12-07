@@ -1,58 +1,17 @@
 import { Request, Response } from "express";
+import restaurantOrdersService from "../services/restaurant.service";
 
-const orders = [
-  {
-    restaurantId: 1,
-    orders: [
-      {
-        id: 1,
-        dish: "spaghetti",
-        amount: 2,
-        totalPrice: 19.9,
-      },
-      {
-        id: 2,
-        dish: "pizza margherita",
-        amount: 1,
-        totalPrice: 12.5,
-      },
-    ],
-  },
-  {
-    restaurantId: 2,
-    orders: [
-      {
-        id: 3,
-        dish: "sushi platter",
-        amount: 3,
-        totalPrice: 45.0,
-      },
-      {
-        id: 4,
-        dish: "tempura",
-        amount: 2,
-        totalPrice: 25.5,
-      },
-    ],
-  },
-  {
-    restaurantId: 3,
-    orders: [
-      {
-        id: 5,
-        dish: "burger deluxe",
-        amount: 4,
-        totalPrice: 48.0,
-      },
-      {
-        id: 6,
-        dish: "fries",
-        amount: 4,
-        totalPrice: 12.0,
-      },
-    ],
-  },
-];
+export const createRestaurantOrder = async (req: Request, res: Response) => {
+  const params = req.params;
+  const order = req.body;
+  const restaurantId = parseInt(params.id);
+  if (!restaurantId) {
+    res.status(400).send("Bad Request: restaurantId is required");
+    return;
+  }
+  const created = restaurantOrdersService.create(restaurantId, order);
+  res.status(201).send(created);
+};
 
 export const getRestaurantOrders = async (req: Request, res: Response) => {
   const params = req.params;
@@ -61,9 +20,7 @@ export const getRestaurantOrders = async (req: Request, res: Response) => {
     res.status(400).send("Bad Request: restaurantId is required");
     return;
   }
-  const restaurantOrders = orders.filter(
-    (order) => order.restaurantId === restaurantId
-  );
+  const restaurantOrders = restaurantOrdersService.find(restaurantId);
   if (!restaurantOrders.length) {
     res
       .status(404)
@@ -75,4 +32,35 @@ export const getRestaurantOrders = async (req: Request, res: Response) => {
     data: restaurantOrders,
   };
   res.send(response);
+};
+
+export const updateRestaurantOrder = async (req: Request, res: Response) => {
+  const params = req.params;
+  const updateInfo = req.body;
+  const restaurantId = parseInt(params.id);
+  const orderId = parseInt(params.orderId);
+  if (!restaurantId || !orderId) {
+    res.status(400).send("Bad Request: restaurantId and orderId is required");
+    return;
+  }
+
+  const updated = restaurantOrdersService.update(
+    restaurantId,
+    orderId,
+    updateInfo
+  );
+  res.status(200).send(updated);
+};
+
+export const deleteRestaurantOrder = async (req: Request, res: Response) => {
+  const params = req.params;
+  const updateInfo = req.body;
+  const restaurantId = parseInt(params.id);
+  const orderId = parseInt(params.orderId);
+  if (!restaurantId || !orderId) {
+    res.status(400).send("Bad Request: restaurantId and orderId is required");
+    return;
+  }
+  const deleted = restaurantOrdersService.remove(restaurantId, orderId);
+  res.status(200).send(deleted);
 };
