@@ -4,7 +4,7 @@ import {
   deleteRestaurantOrder,
   getRestaurantOrders,
   updateRestaurantOrder,
-} from "../controllers/restaurant.controller";
+} from "../controllers/order.controller";
 
 const router = Router();
 
