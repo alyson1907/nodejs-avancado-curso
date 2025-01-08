@@ -20,7 +20,7 @@ export const getRestaurantOrders = async (req: Request, res: Response) => {
     res.status(400).send("Bad Request: restaurantId is required");
     return;
   }
-  const restaurantOrders = restaurantOrdersService.find(restaurantId);
+  const restaurantOrders = await restaurantOrdersService.find(restaurantId);
   if (!restaurantOrders.length) {
     res
       .status(404)

@@ -37,7 +37,7 @@ const router = Router();
  *                   amount:
  *                     type: integer
  *                     description: Quantidade de itens
- *                   totalPrice:
+ *                   price:
  *                     type: number
  *                     format: float
  *                     description: Preço total do pedido
@@ -61,7 +61,7 @@ const router = Router();
  *                     amount:
  *                       type: integer
  *                       description: Quantidade de itens
- *                     totalPrice:
+ *                     price:
  *                       type: number
  *                       format: float
  *                       description: Preço total do pedido
@@ -111,7 +111,7 @@ router.post("/restaurant/:id/orders", createRestaurantOrder);
  *                             amount:
  *                               type: integer
  *                               description: Quantidade de itens
- *                             totalPrice:
+ *                             price:
  *                               type: number
  *                               format: float
  *                               description: Preço total do pedido
@@ -155,7 +155,7 @@ router.get("/restaurant/:id/orders", getRestaurantOrders);
  *                   amount:
  *                     type: integer
  *                     description: Quantidade de itens
- *                   totalPrice:
+ *                   price:
  *                     type: number
  *                     format: float
  *                     description: Preço total do pedido
@@ -190,7 +190,7 @@ router.get("/restaurant/:id/orders", getRestaurantOrders);
  *                           amount:
  *                             type: integer
  *                             description: Quantidade de itens
- *                           totalPrice:
+ *                           price:
  *                             type: number
  *                             format: float
  *                             description: Preço total do pedido

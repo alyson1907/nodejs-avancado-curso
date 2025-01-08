@@ -1,7 +1,8 @@
+import "dotenv/config";
 import express from "express";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import restaurantRouter from "./routes/restaurant.routes";
+import restaurantRouter from "./routes/order.routes";
 
 const app = express();
 const port = 3000;

@@ -1,3 +1,6 @@
+import { Order } from "@prisma/client";
+import prisma from "../../prisma/prisma";
+
 const orders = [
   {
     restaurantId: 1,
@@ -6,13 +9,13 @@ const orders = [
         id: 1,
         dish: "spaghetti",
         amount: 2,
-        totalPrice: 19.9,
+        price: 19.9,
       },
       {
         id: 2,
         dish: "pizza margherita",
         amount: 1,
-        totalPrice: 12.5,
+        price: 12.5,
       },
     ],
   },
@@ -23,13 +26,13 @@ const orders = [
         id: 3,
         dish: "sushi platter",
         amount: 3,
-        totalPrice: 45.0,
+        price: 45.0,
       },
       {
         id: 4,
         dish: "tempura",
         amount: 2,
-        totalPrice: 25.5,
+        price: 25.5,
       },
     ],
   },
@@ -40,13 +43,13 @@ const orders = [
         id: 5,
         dish: "burger deluxe",
         amount: 4,
-        totalPrice: 48.0,
+        price: 48.0,
       },
       {
         id: 6,
         dish: "fries",
         amount: 4,
-        totalPrice: 12.0,
+        price: 12.0,
       },
     ],
   },
@@ -65,8 +68,8 @@ const create = (restaurantId: number, order: Record<string, any>) => {
   return response;
 };
 
-const find = (restaurantId: number) => {
-  return orders.filter((order) => order.restaurantId === restaurantId);
+const find = async (restaurantId: number): Promise<Order[]> => {
+  return prisma.order.findMany();
 };
 
 const update = (
