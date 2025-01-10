@@ -3,7 +3,7 @@ import restaurantsService from "../services/restaurant.service";
 import {
   CreateRestaurantRequestDTO,
   UpdateRestaurantRequestDTO,
-} from "../types/restaurant/restaurant";
+} from "../types/restaurant";
 
 export const createRestaurant = async (
   req: Request,

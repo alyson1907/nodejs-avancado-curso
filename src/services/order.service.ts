@@ -1,103 +1,89 @@
 import { Order } from "@prisma/client";
+import { ParsedQs } from "qs";
 import prisma from "../../prisma/prisma";
+import { BadRequestError, NotFoundError } from "../error/errors";
+import OrderStatus from "../types/enum/order-status.enum";
+import { CreateOrderRequestDTO, UpdateOrderRequestDTO } from "../types/order";
 
-const orders = [
-  {
-    restaurantId: 1,
-    orders: [
-      {
-        id: 1,
-        dish: "spaghetti",
-        amount: 2,
-        price: 19.9,
-      },
-      {
-        id: 2,
-        dish: "pizza margherita",
-        amount: 1,
-        price: 12.5,
-      },
-    ],
-  },
-  {
-    restaurantId: 2,
-    orders: [
-      {
-        id: 3,
-        dish: "sushi platter",
-        amount: 3,
-        price: 45.0,
-      },
-      {
-        id: 4,
-        dish: "tempura",
-        amount: 2,
-        price: 25.5,
-      },
-    ],
-  },
-  {
-    restaurantId: 3,
-    orders: [
-      {
-        id: 5,
-        dish: "burger deluxe",
-        amount: 4,
-        price: 48.0,
-      },
-      {
-        id: 6,
-        dish: "fries",
-        amount: 4,
-        price: 12.0,
-      },
-    ],
-  },
-];
+const create = async (
+  restaurantId: string,
+  data: CreateOrderRequestDTO
+): Promise<Order> => {
+  const { dishes } = data;
+  if (!restaurantId || !dishes)
+    throw new BadRequestError(
+      "Bad Request: restaurantId and dishes are required"
+    );
 
-const create = (restaurantId: number, order: Record<string, any>) => {
-  // ...código para criação de um pedido, verificação se restaurante e produtos existe. etc.
-  const createdOrder = {
-    id: Math.floor(Math.random() * 10000),
-    ...order,
-  };
-  const response = {
-    restaurantId,
-    orders: [createdOrder],
-  };
-  return response;
+  const restaurant = await prisma.restaurant.findUnique({
+    where: { id: restaurantId },
+  });
+  if (!restaurant)
+    throw new NotFoundError(
+      `Not Found: the restaurant ${restaurantId} to create an order was not found`
+    );
+
+  const created = await prisma.order.create({
+    data: {
+      restaurantId,
+      dishes: {
+        create: dishes,
+      },
+    },
+    include: {
+      dishes: true,
+    },
+  });
+  return created;
 };
 
-const find = async (restaurantId: number): Promise<Order[]> => {
-  return prisma.order.findMany();
+const findAll = async (filters: ParsedQs): Promise<Order[]> => {
+  const found = await prisma.order.findMany({
+    where: filters,
+    include: {
+      dishes: true,
+    },
+  });
+  if (!found.length) throw new NotFoundError(`Not Found: no orders were found`);
+  return found;
 };
 
-const update = (
-  restaurantId: number,
-  orderId: number,
-  updateInfo: Record<string, any>
-) => {
-  // ...código para criação de um pedido, verificação se restaurante e produtos existe. etc.
-  const updatedOrder = {
-    id: orderId,
-    ...updateInfo,
-  };
-  const response = {
-    restaurantId,
-    orders: [updatedOrder],
-  };
-  return response;
-};
+const update = async (
+  orderId: string,
+  data: UpdateOrderRequestDTO
+): Promise<Order> => {
+  const { status: newStatus } = data;
+  if (!orderId) throw new NotFoundError("Not Found: orderId is required");
 
-const remove = (restaurantId: number, orderId: number) => {
-  return `Removed order ${orderId} from restaurant ${restaurantId}`;
+  const validOrderStatus = Object.values(OrderStatus);
+  const isValidStatus = validOrderStatus.includes(newStatus);
+  if (!isValidStatus)
+    throw new BadRequestError(
+      `Bad Request: invalid order status change. Please provide one of the following: ${validOrderStatus}`
+    );
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+  });
+  if (!order)
+    throw new NotFoundError(`Not Found: no order ${orderId} was found `);
+
+  const updated = await prisma.order.update({
+    where: { id: order.id },
+    data: {
+      status: newStatus,
+    },
+    include: {
+      dishes: true,
+    },
+  });
+  return updated;
 };
 
 const restaurantOrdersService = {
   create,
-  find,
+  findAll,
   update,
-  remove,
 };
 
 export default restaurantOrdersService;
