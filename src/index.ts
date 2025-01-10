@@ -2,7 +2,9 @@ import "dotenv/config";
 import express from "express";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import restaurantRouter from "./routes/order.routes";
+import errorHandler from "./error/error-handler";
+import orderRouter from "./routes/order.routes";
+import restaurantRouter from "./routes/restaurant.routes";
 
 const app = express();
 const port = 3000;
@@ -22,6 +24,8 @@ const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use(express.json());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use("/api", restaurantRouter);
+app.use("/api", orderRouter);
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
