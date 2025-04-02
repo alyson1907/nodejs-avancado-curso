@@ -42,7 +42,9 @@ A API permite que clientes realizem seus pedidos nos restaurantes e acompanhem o
 
 ### Endpoints da API
 
-- **POST `/api/client/restaurant/:id/order`**
+Abaixo estão exemplos de alguns endpoints e requisições suportadas pela API. Uma lista completa pode ser consultada na documentação Swagger que pode ser acessada pelo navegador na rota `/api-docs`
+
+- **POST `/api/restaurant/:id/orders`**
 
   - Cria um novo pedido para o restaurante com o `id` especificado.
   - **Requisição:** informações do pedido no corpo (JSON).
@@ -58,19 +60,16 @@ A API permite que clientes realizem seus pedidos nos restaurantes e acompanhem o
     - `FINISHED`: Pedido entregue.
     - `CANCELED`: Pedido cancelado.
 
-- **POST `/api/restaurant/login`**
+- **POST `/api/restaurant`**
 
-  - Autenticação de usuário para o restaurante.
-  - **Requisição:** email e senha no corpo (JSON).
-  - **Resposta:** retorna um token JWT nos cookies para autenticação em endpoints protegidos.
+  - Cadastro de novo restaurante no sistema.
+  - **Requisição:** nome e descrição no corpo (JSON).
+  - **Resposta:** confirmação da criação do restaurante.
 
-- **PATCH `/api/restaurant/order/:id`**
-  - Atualiza o status de um pedido específico.
-  - **Requisição:** novo status no corpo (JSON).
-  - **Regra de negócio:** utiliza uma máquina de estados para controlar a transição de status. Por exemplo:
-    - Um pedido com status `IN_PROGRESS` não pode ser atualizado para `FINISHED` sem antes passar pelo status `OUT_FOR_DELIVERY`.
-  - **Resposta:** retorna erro 400 caso o status seja inválido, ou 200 caso a operação tenha sido feita corretamente
-  - **Permissão:** verifica se o usuário autenticado tem permissão para atualizar o pedido do restaurante especificado.
+- **PATCH `/api/restaurant/:id`**
+  - Atualiza informações de um restaurante em específico.
+  - **Requisição:** novas informações no corpo (JSON).
+  - **Resposta:** confirmação de atualização das informações de um restaurante
 
 ## Tecnologias Utilizadas (verificar)
 
@@ -78,28 +77,30 @@ A API permite que clientes realizem seus pedidos nos restaurantes e acompanhem o
 - **TypeScript**
 - **Express** (criação de rotas e controle de requisições HTTP)
 - **WebSockets** (acompanhamento de pedidos em tempo real)
-- **JWT** (autenticação de usuários)
 
 ## Uso
-
-### Autenticação
-
-- Para acessar rotas protegidas, autentique-se na rota `/api/restaurant/login` com as credenciais do restaurante.
-- Um token JWT será retornado, permitindo que você façaas próximas requisições de maneira autenticadas.
 
 ### Exemplos de Requisição
 
 #### Criar Pedido
 
 ```http
-POST /api/client/restaurant/1/order
+POST /api/restaurant/1/orders
 Content-Type: application/json
 Authorization: Bearer jwt_token
 
 {
-  "items": [
-    { "name": "Pizza de Calabresa", "quantity": 1 },
-    { "name": "Refrigerante Lata", "quantity": 2 }
+  "dishes": [
+    {
+      "dishName": "donut",
+      "amount": 2,
+      "price": 5.99
+    },
+    {
+      "dishName": "croissant de queijo",
+      "amount": 5,
+      "price": 19.99
+    }
   ]
 }
 ```
