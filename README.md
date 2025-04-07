@@ -12,8 +12,6 @@ A API permite que clientes realizem seus pedidos nos restaurantes e acompanhem o
 - [Funcionalidades](#funcionalidades)
 - [Tecnologias Utilizadas](#tecnologias-utilizadas)
 - [Uso](#uso)
-- [Estrutura de Status de Pedidos](#estrutura-de-status-de-pedidos)
-- [Contribuição](#contribuição)
 
 ## Instalação e Execução
 
@@ -72,7 +70,7 @@ A API permite que clientes realizem seus pedidos nos restaurantes e acompanhem o
   - **Resposta:** retorna erro 400 caso o status seja inválido, ou 200 caso a operação tenha sido feita corretamente
   - **Permissão:** verifica se o usuário autenticado tem permissão para atualizar o pedido do restaurante especificado.
 
-## Tecnologias Utilizadas (verificar)
+## Tecnologias Utilizadas
 
 - **Node.js**
 - **TypeScript**
