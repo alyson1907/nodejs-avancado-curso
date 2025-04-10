@@ -74,11 +74,11 @@ const remove = async (restaurantId: string): Promise<Restaurant> => {
   return removed;
 };
 
-const restaurantOrdersService = {
+const restaurantService = {
   create,
   findAll,
   update,
   remove,
 };
 
-export default restaurantOrdersService;
+export default restaurantService;
