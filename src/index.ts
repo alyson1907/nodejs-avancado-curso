@@ -1,6 +1,6 @@
 import "dotenv/config";
 import express from "express";
-import swaggerJsdoc from "swagger-jsdoc";
+import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import errorHandler from "./error/error-handler";
 import orderRouter from "./routes/order.routes";
@@ -15,18 +15,19 @@ const swaggerOptions = {
     info: {
       title: "Restaurant Orders API",
       version: "1.0.0",
-      description: "Documentação da API do restaurante usando JSDoc",
+      description: "Documentação da API do restaurante",
     },
   },
-  apis: ["./src/routes/*.ts"], // Localização dos arquivos com JSDoc
+  apis: ["./src/routes/*.ts"],
 };
-const swaggerDocs = swaggerJsdoc(swaggerOptions);
-app.use(express.json());
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-app.use("/api", restaurantRouter);
-app.use("/api", orderRouter);
-app.use(errorHandler);
 
+const swaggerDoc = swaggerJsDoc(swaggerOptions);
+
+app.use(express.json());
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+app.use("/api", orderRouter);
+app.use("/api", restaurantRouter);
+app.use(errorHandler);
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });

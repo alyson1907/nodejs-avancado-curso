@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import restaurantsService from "../services/restaurant.service";
+import restaurantService from "../services/restaurant.service";
 import {
   CreateRestaurantRequestDTO,
   UpdateRestaurantRequestDTO,
@@ -12,7 +12,7 @@ export const createRestaurant = async (
 ): Promise<void> => {
   try {
     const data: CreateRestaurantRequestDTO = req.body;
-    const created = await restaurantsService.create(data);
+    const created = await restaurantService.create(data);
     const response = {
       data: created,
     };
@@ -28,7 +28,8 @@ export const getRestaurants = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const found = await restaurantsService.findAll(req.query);
+    const filters = req.query;
+    const found = await restaurantService.findAll(filters);
     const response = {
       data: found,
     };
@@ -46,11 +47,11 @@ export const updateRestaurant = async (
   try {
     const restaurantId = req.params.id;
     const data: UpdateRestaurantRequestDTO = req.body;
-    const updated = await restaurantsService.update(restaurantId, data);
+    const updated = await restaurantService.update(restaurantId, data);
     const response = {
       data: updated,
     };
-    res.status(200).send(response);
+    res.send(response);
   } catch (error) {
     next(error);
   }
@@ -61,7 +62,11 @@ export const deleteRestaurant = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const restaurantId = req.params.id;
-  const deleted = await restaurantsService.remove(restaurantId);
-  res.status(200).send(`Restaurant ${restaurantId} was removed`);
+  try {
+    const restaurantId = req.params.id;
+    const removed = await restaurantService.remove(restaurantId);
+    res.send(`Restaurante de id ${removed.id} removido com sucesso!`);
+  } catch (error) {
+    next(error);
+  }
 };

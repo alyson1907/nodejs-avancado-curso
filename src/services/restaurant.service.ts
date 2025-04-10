@@ -1,7 +1,7 @@
 import { Restaurant } from "@prisma/client";
 import { ParsedQs } from "qs";
 import prisma from "../../prisma/prisma";
-import { BadRequestError, NotFoundError } from "../error/errors";
+import { BadRequestError, NotFoundError } from "../error/error";
 import {
   CreateRestaurantRequestDTO,
   UpdateRestaurantRequestDTO,
@@ -11,22 +11,22 @@ const create = async (
   data: CreateRestaurantRequestDTO
 ): Promise<Restaurant> => {
   if (!data.name)
-    throw new BadRequestError("Bad Request: restaurant name is required");
+    throw new BadRequestError("Bad Request: name é um campo obrigatório");
 
   const restaurant = await prisma.restaurant.findUnique({
     where: { name: data.name },
   });
+
   if (restaurant)
-    throw new BadRequestError("Bad Request: restaurant already exists");
+    throw new BadRequestError("Bad Request: o restaurante já existe");
 
   return prisma.restaurant.create({ data });
 };
 
-// TODO Trocar ParsedQs por tipagem Omit<Restaurant, ...> em módulos futuros
 const findAll = async (filters: ParsedQs): Promise<Restaurant[]> => {
   const restaurants = await prisma.restaurant.findMany({ where: filters });
   if (!restaurants.length)
-    throw new NotFoundError("Not Found: no restaurants were found");
+    throw new NotFoundError("Not Found: nenhum restaurante encontrado");
   return restaurants;
 };
 
@@ -35,15 +35,13 @@ const update = async (
   data: UpdateRestaurantRequestDTO
 ): Promise<Restaurant> => {
   if (!restaurantId)
-    throw new BadRequestError("Bad Request: restaurantId is required");
+    throw new BadRequestError("Bad Request: restaurantId é obrigatório");
 
   const restaurant = await prisma.restaurant.findUnique({
     where: { id: restaurantId },
   });
   if (!restaurant)
-    throw new NotFoundError(
-      "Not Found: the restaurant to update was not found"
-    );
+    throw new NotFoundError("Not Found: restaurante não encontrado");
 
   const updated = await prisma.restaurant.update({
     where: { id: restaurant.id },
@@ -54,17 +52,14 @@ const update = async (
 
 const remove = async (restaurantId: string): Promise<Restaurant> => {
   if (!restaurantId)
-    throw new BadRequestError("Bad Request: restaurantId is required");
+    throw new BadRequestError("Bad Request: restaurantId é obrigatório");
 
   const restaurant = await prisma.restaurant.findUnique({
     where: { id: restaurantId },
   });
   if (!restaurant)
-    throw new NotFoundError(
-      "Not Found: the restaurant to remove was not found"
-    );
+    throw new NotFoundError("Not Found: restaurante não encontrado");
 
-  // Soft Delete
   const removed = await prisma.restaurant.update({
     where: { id: restaurant.id },
     data: {

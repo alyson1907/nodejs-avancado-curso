@@ -1,3 +1,9 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -19,21 +25,21 @@ model Restaurant {
 
 model Order {
   id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  restaurantId String     @db.ObjectId
   status       String     @default("CREATED")
   dishes       Dish[]
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   createdAt    DateTime   @default(now())
   updatedAt    DateTime?  @updatedAt
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String     @db.ObjectId
 }
 
 model Dish {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  orderId   String    @db.ObjectId
   dishName  String
   amount    Int
   price     Float
-  order     Order     @relation(fields: [orderId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+  order     Order     @relation(fields: [orderId], references: [id])
+  orderId   String    @db.ObjectId
 }
