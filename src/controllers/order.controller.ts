@@ -26,7 +26,8 @@ export const getOrder = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const restaurantOrders = await restaurantOrdersService.findAll(req.query);
+    const filters = req.query;
+    const restaurantOrders = await restaurantOrdersService.findAll(filters);
     const response = {
       data: restaurantOrders,
     };

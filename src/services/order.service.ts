@@ -2,7 +2,6 @@ import { Order } from "@prisma/client";
 import { ParsedQs } from "qs";
 import prisma from "../../prisma/prisma";
 import { BadRequestError, NotFoundError } from "../error/errors";
-import OrderStatus from "../types/enum/order-status.enum";
 import { CreateOrderRequestDTO, UpdateOrderRequestDTO } from "../types/order";
 
 const create = async (
@@ -52,16 +51,21 @@ const update = async (
   orderId: string,
   data: UpdateOrderRequestDTO
 ): Promise<Order> => {
-  const { status: newStatus } = data;
   if (!orderId) throw new NotFoundError("Not Found: orderId is required");
 
-  const validOrderStatus = Object.values(OrderStatus);
+  const { status: newStatus } = data;
+  const validOrderStatus = [
+    "CREATED",
+    "IN_PROGRESS",
+    "OUT_FOR_DELIVERY",
+    "FINISHED",
+    "CANCELLED",
+  ];
   const isValidStatus = validOrderStatus.includes(newStatus);
   if (!isValidStatus)
     throw new BadRequestError(
       `Bad Request: invalid order status change. Please provide one of the following: ${validOrderStatus}`
     );
-
   const order = await prisma.order.findUnique({
     where: { id: orderId },
   });
