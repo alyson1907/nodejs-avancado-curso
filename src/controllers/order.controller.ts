@@ -1,22 +1,56 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import restaurantOrdersService from "../services/order.service";
+import { CreateOrderRequestDTO, UpdateOrderRequestDTO } from "../types/order";
 
-export const getRestaurantOrders = (req: Request, res: Response) => {
-  const params = req.params;
-  const restaurantId = parseInt(params.id);
-  if (!restaurantId) {
-    res.status(400).send("Bad Request: restaurantId é um campo obrigatório");
-    return;
+export const createRestaurantOrder = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const restaurantId = req.params.id;
+    const data: CreateOrderRequestDTO = req.body;
+    const created = await restaurantOrdersService.create(restaurantId, data);
+    const response = {
+      data: created,
+    };
+    res.status(201).send(response);
+  } catch (error) {
+    next(error);
   }
+};
 
-  const restaurantOrders = restaurantOrdersService.find(restaurantId);
-  if (!restaurantOrders.length) {
-    res.status(404).send("Not Found: nenhum pedido encontrado!");
-    return;
+export const getOrder = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const filters = req.query;
+    const restaurantOrders = await restaurantOrdersService.findAll(filters);
+    const response = {
+      data: restaurantOrders,
+    };
+    res.send(response);
+  } catch (error) {
+    next(error);
   }
+};
 
-  const response = {
-    data: restaurantOrders,
-  };
-  res.send(response);
+export const updateOrder = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const orderId = req.params.orderId;
+    const data: UpdateOrderRequestDTO = req.body;
+    const updated = await restaurantOrdersService.update(orderId, data);
+    const response = {
+      data: updated,
+    };
+    res.send(response);
+  } catch (error) {
+    next(error);
+  }
 };

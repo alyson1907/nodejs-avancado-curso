@@ -1,64 +1,99 @@
-const orders = [
-  {
-    restaurantId: 1,
-    orders: [
-      {
-        id: 1,
-        dish: "spaghetti",
-        amount: 2,
-        totalPrice: 19.9,
-      },
-      {
-        id: 2,
-        dish: "pizza margherita",
-        amount: 1,
-        totalPrice: 12.5,
-      },
-    ],
-  },
-  {
-    restaurantId: 2,
-    orders: [
-      {
-        id: 3,
-        dish: "sushi platter",
-        amount: 3,
-        totalPrice: 45.0,
-      },
-      {
-        id: 4,
-        dish: "tempura",
-        amount: 2,
-        totalPrice: 25.5,
-      },
-    ],
-  },
-  {
-    restaurantId: 3,
-    orders: [
-      {
-        id: 5,
-        dish: "burger deluxe",
-        amount: 4,
-        totalPrice: 48.0,
-      },
-      {
-        id: 6,
-        dish: "fries",
-        amount: 4,
-        totalPrice: 12.0,
-      },
-    ],
-  },
-];
+import { Order } from "@prisma/client";
+import { ParsedQs } from "qs";
+import prisma from "../../prisma/prisma";
+import { BadRequestError, NotFoundError } from "../error/error";
+import { CreateOrderRequestDTO, UpdateOrderRequestDTO } from "../types/order";
 
-const find = (restaurantId: number) => {
-  const result = orders.filter((order) => order.restaurantId === restaurantId);
-  return result;
+const create = async (
+  restaurantId: string,
+  data: CreateOrderRequestDTO
+): Promise<Order> => {
+  const { dishes } = data;
+  if (!restaurantId || !dishes)
+    throw new BadRequestError(
+      "Bad Request: campos restaurantId e dishes são obrigatórios"
+    );
+
+  const restaurant = await prisma.restaurant.findUnique({
+    where: { id: restaurantId },
+  });
+  if (!restaurant)
+    throw new BadRequestError(
+      "Bad Request: restaurante para criar o pedido não encontrado!"
+    );
+
+  const created = await prisma.order.create({
+    data: {
+      restaurantId,
+      dishes: {
+        create: dishes,
+      },
+    },
+    include: {
+      dishes: true,
+    },
+  });
+
+  return created;
+};
+
+const findAll = async (filters: ParsedQs): Promise<Order[]> => {
+  const found = await prisma.order.findMany({
+    where: filters,
+    include: {
+      dishes: true,
+    },
+  });
+
+  if (!found.length)
+    throw new NotFoundError("Not Found: nenhum prato foi encontrado!");
+
+  return found;
+};
+
+const update = async (
+  orderId: string,
+  data: UpdateOrderRequestDTO
+): Promise<Order> => {
+  if (!orderId) throw new BadRequestError("Bad Request: orderId é obrigatório");
+
+  const { status: newStatus } = data;
+  const validOrderStatus = [
+    "CREATED",
+    "IN_PROGRESS",
+    "OUT_FOR_DELIVERY",
+    "FINISHED",
+    "CANCELLED",
+  ];
+  const isValidStatus = validOrderStatus.includes(newStatus);
+  if (!isValidStatus)
+    throw new BadRequestError("Bad Request: novo status de pedido invalido!");
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+  });
+  if (!order)
+    throw new NotFoundError(
+      "Bad Request: pedido para ser atualizado inexistente!"
+    );
+
+  const updated = await prisma.order.update({
+    where: { id: order.id },
+    data: {
+      status: newStatus,
+    },
+    include: {
+      dishes: true,
+    },
+  });
+
+  return updated;
 };
 
 const restaurantOrdersService = {
-  find,
+  create,
+  findAll,
+  update,
 };
 
 export default restaurantOrdersService;
